@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react"
 import {
-  getUsuariosRequest,
-  createUsuarioRequest,
-  updateUsuarioRequest,
-  deleteUsuarioRequest,
-} from "../../core/services/usuario.service"
+  getAccessUsersRequest,
+  createAccessUserRequest,
+  updateAccessUserRequest,
+  deleteAccessUserRequest,
+} from "../../core/services/accessUser.service"
+import { getAccessRolesRequest } from "../../core/services/accessRole.service"
 import { useAuth } from "../../core/context/AuthContext"
 
 function UsuariosPage() {
   const { isAdmin } = useAuth()
 
   const [usuarios, setUsuarios] = useState([])
+  const [roles, setRoles] = useState([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
@@ -18,9 +20,12 @@ function UsuariosPage() {
 
   const [formData, setFormData] = useState({
     username: "",
-    correo: "",
-    password_hash: "",
-    activo: true,
+    email: "",
+    first_name: "",
+    last_name: "",
+    password: "",
+    is_active: true,
+    role_name: "",
   })
 
   const cardStyle = {
@@ -40,15 +45,17 @@ function UsuariosPage() {
     color: "white",
   }
 
-  const loadUsuarios = async () => {
+  const loadData = async () => {
     try {
       setError("")
-      const data = await getUsuariosRequest()
-      setUsuarios(data)
+      const [usersData, rolesData] = await Promise.all([
+        getAccessUsersRequest(),
+        getAccessRolesRequest(),
+      ])
+      setUsuarios(usersData)
+      setRoles(rolesData)
     } catch (err) {
       console.error("ERROR USUARIOS:", err)
-      console.error("RESPONSE:", err?.response)
-      console.error("DATA:", err?.response?.data)
       setError("No se pudieron cargar los usuarios")
     } finally {
       setLoading(false)
@@ -56,15 +63,18 @@ function UsuariosPage() {
   }
 
   useEffect(() => {
-    loadUsuarios()
+    loadData()
   }, [])
 
   const resetForm = () => {
     setFormData({
       username: "",
-      correo: "",
-      password_hash: "",
-      activo: true,
+      email: "",
+      first_name: "",
+      last_name: "",
+      password: "",
+      is_active: true,
+      role_name: "",
     })
     setEditingId(null)
   }
@@ -83,20 +93,26 @@ function UsuariosPage() {
     setError("")
 
     try {
-      const payload = { ...formData }
-
-      if (editingId) {
-        await updateUsuarioRequest(editingId, payload)
-      } else {
-        await createUsuarioRequest(payload)
+      const payload = {
+        username: formData.username,
+        email: formData.email,
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        password: formData.password,
+        is_active: formData.is_active,
+        role_names: formData.role_name ? [formData.role_name] : [],
       }
 
-      await loadUsuarios()
+      if (editingId) {
+        await updateAccessUserRequest(editingId, payload)
+      } else {
+        await createAccessUserRequest(payload)
+      }
+
+      await loadData()
       resetForm()
     } catch (err) {
       console.error("ERROR GUARDAR USUARIO:", err)
-      console.error("RESPONSE:", err?.response)
-      console.error("DATA:", err?.response?.data)
       setError(err?.response?.data?.error || "No se pudo guardar el usuario")
     } finally {
       setSaving(false)
@@ -104,12 +120,15 @@ function UsuariosPage() {
   }
 
   const handleEdit = (usuario) => {
-    setEditingId(usuario.id_usuario)
+    setEditingId(usuario.id)
     setFormData({
       username: usuario.username || "",
-      correo: usuario.correo || "",
-      password_hash: "",
-      activo: !!usuario.activo,
+      email: usuario.email || "",
+      first_name: usuario.first_name || "",
+      last_name: usuario.last_name || "",
+      password: "",
+      is_active: !!usuario.is_active,
+      role_name: usuario.roles?.[0] || "",
     })
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
@@ -119,12 +138,10 @@ function UsuariosPage() {
     if (!ok) return
 
     try {
-      await deleteUsuarioRequest(id)
-      await loadUsuarios()
+      await deleteAccessUserRequest(id)
+      await loadData()
     } catch (err) {
       console.error("ERROR ELIMINAR USUARIO:", err)
-      console.error("RESPONSE:", err?.response)
-      console.error("DATA:", err?.response?.data)
       setError(err?.response?.data?.error || "No se pudo eliminar el usuario")
     }
   }
@@ -135,14 +152,12 @@ function UsuariosPage() {
 
   return (
     <div>
-      <h2 style={{ marginBottom: "12px" }}>Usuarios</h2>
+      <h2 style={{ marginBottom: "12px" }}>Usuarios de acceso</h2>
       <p style={{ color: "#94a3b8", marginBottom: "20px" }}>
-        Gestión de usuarios del sistema.
+        Crea usuarios reales para entrar al sistema y asígnales rol.
       </p>
 
-      {error && (
-        <p style={{ color: "#f87171", marginBottom: "16px" }}>{error}</p>
-      )}
+      {error && <p style={{ color: "#f87171", marginBottom: "16px" }}>{error}</p>}
 
       <div style={{ ...cardStyle, marginBottom: "24px" }}>
         <h3 style={{ marginBottom: "16px" }}>
@@ -150,52 +165,55 @@ function UsuariosPage() {
         </h3>
 
         <form onSubmit={handleSubmit}>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: "16px",
-            }}
-          >
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px" }}>
             <div>
               <label>Username</label>
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                style={inputStyle}
-              />
+              <input name="username" value={formData.username} onChange={handleChange} style={inputStyle} />
             </div>
 
             <div>
-              <label>Correo</label>
-              <input
-                type="email"
-                name="correo"
-                value={formData.correo}
-                onChange={handleChange}
-                style={inputStyle}
-              />
+              <label>Email</label>
+              <input name="email" value={formData.email} onChange={handleChange} style={inputStyle} />
+            </div>
+
+            <div>
+              <label>Nombres</label>
+              <input name="first_name" value={formData.first_name} onChange={handleChange} style={inputStyle} />
+            </div>
+
+            <div>
+              <label>Apellidos</label>
+              <input name="last_name" value={formData.last_name} onChange={handleChange} style={inputStyle} />
             </div>
 
             <div>
               <label>{editingId ? "Nueva contraseña (opcional)" : "Contraseña"}</label>
-              <input
-                type="text"
-                name="password_hash"
-                value={formData.password_hash}
+              <input name="password" value={formData.password} onChange={handleChange} style={inputStyle} />
+            </div>
+
+            <div>
+              <label>Rol</label>
+              <select
+                name="role_name"
+                value={formData.role_name}
                 onChange={handleChange}
                 style={inputStyle}
-              />
+              >
+                <option value="">Seleccione un rol</option>
+                {roles.map((rol) => (
+                  <option key={rol.id} value={rol.name}>
+                    {rol.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div style={{ display: "flex", alignItems: "end" }}>
               <label style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                 <input
                   type="checkbox"
-                  name="activo"
-                  checked={formData.activo}
+                  name="is_active"
+                  checked={formData.is_active}
                   onChange={handleChange}
                 />
                 Activo
@@ -204,36 +222,10 @@ function UsuariosPage() {
           </div>
 
           <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
-            <button
-              type="submit"
-              disabled={saving}
-              style={{
-                padding: "12px 18px",
-                borderRadius: "10px",
-                border: "none",
-                background: "#14b8a6",
-                color: "#020617",
-                fontWeight: "bold",
-                cursor: "pointer",
-              }}
-            >
+            <button type="submit" disabled={saving}>
               {saving ? "Guardando..." : editingId ? "Actualizar" : "Crear"}
             </button>
-
-            <button
-              type="button"
-              onClick={resetForm}
-              style={{
-                padding: "12px 18px",
-                borderRadius: "10px",
-                border: "1px solid #334155",
-                background: "#1e293b",
-                color: "white",
-                cursor: "pointer",
-              }}
-            >
-              Limpiar
-            </button>
+            <button type="button" onClick={resetForm}>Limpiar</button>
           </div>
         </form>
       </div>
@@ -247,40 +239,16 @@ function UsuariosPage() {
       {!loading && usuarios.length > 0 && (
         <div style={{ display: "grid", gap: "16px" }}>
           {usuarios.map((usuario) => (
-            <div key={usuario.id_usuario} style={cardStyle}>
+            <div key={usuario.id} style={cardStyle}>
               <h3 style={{ marginBottom: "10px" }}>{usuario.username}</h3>
-              <p><strong>Correo:</strong> {usuario.correo || "No definido"}</p>
-              <p><strong>Activo:</strong> {usuario.activo ? "Sí" : "No"}</p>
-              <p><strong>Último acceso:</strong> {usuario.ultimo_acceso || "Sin registro"}</p>
+              <p><strong>Email:</strong> {usuario.email || "No definido"}</p>
+              <p><strong>Nombre:</strong> {usuario.first_name || "-"} {usuario.last_name || ""}</p>
+              <p><strong>Activo:</strong> {usuario.is_active ? "Sí" : "No"}</p>
+              <p><strong>Roles:</strong> {usuario.roles?.join(", ") || "Sin rol"}</p>
 
               <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
-                <button
-                  onClick={() => handleEdit(usuario)}
-                  style={{
-                    padding: "10px 14px",
-                    borderRadius: "10px",
-                    border: "none",
-                    background: "#3b82f6",
-                    color: "white",
-                    cursor: "pointer",
-                  }}
-                >
-                  Editar
-                </button>
-
-                <button
-                  onClick={() => handleDelete(usuario.id_usuario)}
-                  style={{
-                    padding: "10px 14px",
-                    borderRadius: "10px",
-                    border: "none",
-                    background: "#ef4444",
-                    color: "white",
-                    cursor: "pointer",
-                  }}
-                >
-                  Eliminar
-                </button>
+                <button onClick={() => handleEdit(usuario)}>Editar</button>
+                <button onClick={() => handleDelete(usuario.id)}>Eliminar</button>
               </div>
             </div>
           ))}

@@ -42,7 +42,22 @@ export function AuthProvider({ children }) {
     setUser(null)
   }
 
-  const isAdmin = user?.is_staff || user?.is_superuser
+  const primaryRole = user?.primary_role || null
+  const roles = user?.roles || []
+
+  const isAdmin =
+    user?.is_superuser ||
+    user?.is_staff ||
+    primaryRole === "ADMIN" ||
+    roles.includes("ADMIN")
+
+  const isOperador = primaryRole === "OPERADOR" || roles.includes("OPERADOR")
+  const isVisor = primaryRole === "VISOR" || roles.includes("VISOR")
+
+  const hasRole = (role) => {
+    if (isAdmin) return true
+    return primaryRole === role || roles.includes(role)
+  }
 
   return (
     <AuthContext.Provider
@@ -52,7 +67,12 @@ export function AuthProvider({ children }) {
         login,
         logout,
         isAuthenticated: !!user,
+        roles,
+        primaryRole,
         isAdmin,
+        isOperador,
+        isVisor,
+        hasRole,
       }}
     >
       {children}

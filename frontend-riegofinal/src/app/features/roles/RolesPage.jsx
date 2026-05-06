@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
 import {
-  getRolesRequest,
-  createRolRequest,
-  updateRolRequest,
-  deleteRolRequest,
-} from "../../core/services/rol.service"
+  getAccessRolesRequest,
+  createAccessRoleRequest,
+  updateAccessRoleRequest,
+  deleteAccessRoleRequest,
+} from "../../core/services/accessRole.service"
 import { useAuth } from "../../core/context/AuthContext"
 
 function RolesPage() {
@@ -17,8 +17,7 @@ function RolesPage() {
   const [editingId, setEditingId] = useState(null)
 
   const [formData, setFormData] = useState({
-    nombre: "",
-    descripcion: "",
+    name: "",
   })
 
   const cardStyle = {
@@ -41,12 +40,10 @@ function RolesPage() {
   const loadRoles = async () => {
     try {
       setError("")
-      const data = await getRolesRequest()
+      const data = await getAccessRolesRequest()
       setRoles(data)
     } catch (err) {
       console.error("ERROR ROLES:", err)
-      console.error("RESPONSE:", err?.response)
-      console.error("DATA:", err?.response?.data)
       setError("No se pudieron cargar los roles")
     } finally {
       setLoading(false)
@@ -58,19 +55,12 @@ function RolesPage() {
   }, [])
 
   const resetForm = () => {
-    setFormData({
-      nombre: "",
-      descripcion: "",
-    })
+    setFormData({ name: "" })
     setEditingId(null)
   }
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
+    setFormData({ name: e.target.value.toUpperCase() })
   }
 
   const handleSubmit = async (e) => {
@@ -79,20 +69,16 @@ function RolesPage() {
     setError("")
 
     try {
-      const payload = { ...formData }
-
       if (editingId) {
-        await updateRolRequest(editingId, payload)
+        await updateAccessRoleRequest(editingId, formData)
       } else {
-        await createRolRequest(payload)
+        await createAccessRoleRequest(formData)
       }
 
       await loadRoles()
       resetForm()
     } catch (err) {
       console.error("ERROR GUARDAR ROL:", err)
-      console.error("RESPONSE:", err?.response)
-      console.error("DATA:", err?.response?.data)
       setError(err?.response?.data?.error || "No se pudo guardar el rol")
     } finally {
       setSaving(false)
@@ -100,11 +86,8 @@ function RolesPage() {
   }
 
   const handleEdit = (rol) => {
-    setEditingId(rol.id_rol)
-    setFormData({
-      nombre: rol.nombre || "",
-      descripcion: rol.descripcion || "",
-    })
+    setEditingId(rol.id)
+    setFormData({ name: rol.name || "" })
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
@@ -113,12 +96,10 @@ function RolesPage() {
     if (!ok) return
 
     try {
-      await deleteRolRequest(id)
+      await deleteAccessRoleRequest(id)
       await loadRoles()
     } catch (err) {
       console.error("ERROR ELIMINAR ROL:", err)
-      console.error("RESPONSE:", err?.response)
-      console.error("DATA:", err?.response?.data)
       setError(err?.response?.data?.error || "No se pudo eliminar el rol")
     }
   }
@@ -129,14 +110,12 @@ function RolesPage() {
 
   return (
     <div>
-      <h2 style={{ marginBottom: "12px" }}>Roles</h2>
+      <h2 style={{ marginBottom: "12px" }}>Roles de acceso</h2>
       <p style={{ color: "#94a3b8", marginBottom: "20px" }}>
-        Gestión de roles del sistema.
+        Gestión de roles reales de acceso al sistema.
       </p>
 
-      {error && (
-        <p style={{ color: "#f87171", marginBottom: "16px" }}>{error}</p>
-      )}
+      {error && <p style={{ color: "#f87171", marginBottom: "16px" }}>{error}</p>}
 
       <div style={{ ...cardStyle, marginBottom: "24px" }}>
         <h3 style={{ marginBottom: "16px" }}>
@@ -144,66 +123,23 @@ function RolesPage() {
         </h3>
 
         <form onSubmit={handleSubmit}>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-              gap: "16px",
-            }}
-          >
-            <div>
-              <label>Nombre</label>
-              <input
-                type="text"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
-                style={inputStyle}
-              />
-            </div>
-
-            <div style={{ gridColumn: "1 / -1" }}>
-              <label>Descripción</label>
-              <textarea
-                name="descripcion"
-                value={formData.descripcion}
-                onChange={handleChange}
-                style={{ ...inputStyle, minHeight: "90px", resize: "vertical" }}
-              />
-            </div>
+          <div>
+            <label>Nombre del rol</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              style={inputStyle}
+              placeholder="ADMIN / OPERADOR / VISOR"
+            />
           </div>
 
           <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
-            <button
-              type="submit"
-              disabled={saving}
-              style={{
-                padding: "12px 18px",
-                borderRadius: "10px",
-                border: "none",
-                background: "#14b8a6",
-                color: "#020617",
-                fontWeight: "bold",
-                cursor: "pointer",
-              }}
-            >
-              {saving ? "Guardando..." : editingId ? "Actualizar" : "Crear"}
-            </button>
-
-            <button
-              type="button"
-              onClick={resetForm}
-              style={{
-                padding: "12px 18px",
-                borderRadius: "10px",
-                border: "1px solid #334155",
-                background: "#1e293b",
-                color: "white",
-                cursor: "pointer",
-              }}
-            >
-              Limpiar
-            </button>
+            <button type="submit" disabled={saving}>{
+              saving ? "Guardando..." : editingId ? "Actualizar" : "Crear"
+            }</button>
+            <button type="button" onClick={resetForm}>Limpiar</button>
           </div>
         </form>
       </div>
@@ -217,38 +153,12 @@ function RolesPage() {
       {!loading && roles.length > 0 && (
         <div style={{ display: "grid", gap: "16px" }}>
           {roles.map((rol) => (
-            <div key={rol.id_rol} style={cardStyle}>
-              <h3 style={{ marginBottom: "10px" }}>{rol.nombre}</h3>
-              <p><strong>Descripción:</strong> {rol.descripcion || "Sin descripción"}</p>
+            <div key={rol.id} style={cardStyle}>
+              <h3 style={{ marginBottom: "10px" }}>{rol.name}</h3>
 
               <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
-                <button
-                  onClick={() => handleEdit(rol)}
-                  style={{
-                    padding: "10px 14px",
-                    borderRadius: "10px",
-                    border: "none",
-                    background: "#3b82f6",
-                    color: "white",
-                    cursor: "pointer",
-                  }}
-                >
-                  Editar
-                </button>
-
-                <button
-                  onClick={() => handleDelete(rol.id_rol)}
-                  style={{
-                    padding: "10px 14px",
-                    borderRadius: "10px",
-                    border: "none",
-                    background: "#ef4444",
-                    color: "white",
-                    cursor: "pointer",
-                  }}
-                >
-                  Eliminar
-                </button>
+                <button onClick={() => handleEdit(rol)}>Editar</button>
+                <button onClick={() => handleDelete(rol.id)}>Eliminar</button>
               </div>
             </div>
           ))}
