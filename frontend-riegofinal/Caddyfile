@@ -1,0 +1,10 @@
+{
+  auto_https off
+}
+
+:{$PORT} {
+  root * /usr/share/caddy
+  try_files {path} /index.html
+  encode gzip
+  file_server
+}
