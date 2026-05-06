@@ -10,7 +10,8 @@ import { getZonasRequest } from "../../core/services/zona.service"
 import { useAuth } from "../../core/context/AuthContext"
 
 function SensoresPage() {
-  const { isAdmin } = useAuth()
+  const { isAdmin, hasRole } = useAuth()
+  const canEdit = isAdmin || hasRole("OPERADOR")
 
   const [sensores, setSensores] = useState([])
   const [dispositivos, setDispositivos] = useState([])
@@ -159,7 +160,7 @@ function SensoresPage() {
 
       {error && <p style={{ color: "#f87171", marginBottom: "16px" }}>{error}</p>}
 
-      {isAdmin && (
+      {canEdit && (
         <div style={{ ...cardStyle, marginBottom: "24px" }}>
           <h3 style={{ marginBottom: "16px" }}>
             {editingId ? "Editar sensor" : "Nuevo sensor"}
@@ -281,7 +282,7 @@ function SensoresPage() {
               <p><strong>Dispositivo:</strong> {sensor.dispositivo?.nombre || "Sin dispositivo"}</p>
               <p><strong>Zona:</strong> {sensor.zona?.nombre || "Sin zona"}</p>
 
-              {isAdmin && (
+              {canEdit && (
                 <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
                   <button
                     onClick={() => handleEdit(sensor)}

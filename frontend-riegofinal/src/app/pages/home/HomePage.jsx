@@ -46,14 +46,12 @@ function HomePage() {
             </h1>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Link
-              to="/login"
-              className="rounded-2xl border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-slate-800"
-            >
-              Iniciar sesión
-            </Link>
-          </div>
+          <Link
+            to="/login"
+            className="rounded-2xl border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-slate-800"
+          >
+            Iniciar sesión
+          </Link>
         </div>
       </header>
 
@@ -92,7 +90,7 @@ function HomePage() {
 
             <div className="mt-10 grid gap-4 md:grid-cols-3">
               <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-5">
-                <div className="mb-3 rounded-2xl bg-emerald-500/10 p-3 text-emerald-400 w-fit">
+                <div className="mb-3 w-fit rounded-2xl bg-emerald-500/10 p-3 text-emerald-400">
                   <Droplets size={20} />
                 </div>
                 <h3 className="text-xl font-bold">Riego inteligente</h3>
@@ -102,7 +100,7 @@ function HomePage() {
               </div>
 
               <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-5">
-                <div className="mb-3 rounded-2xl bg-cyan-500/10 p-3 text-cyan-400 w-fit">
+                <div className="mb-3 w-fit rounded-2xl bg-cyan-500/10 p-3 text-cyan-400">
                   <Activity size={20} />
                 </div>
                 <h3 className="text-xl font-bold">Actividad en tiempo real</h3>
@@ -112,7 +110,7 @@ function HomePage() {
               </div>
 
               <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-5">
-                <div className="mb-3 rounded-2xl bg-amber-500/10 p-3 text-amber-400 w-fit">
+                <div className="mb-3 w-fit rounded-2xl bg-amber-500/10 p-3 text-amber-400">
                   <ShieldCheck size={20} />
                 </div>
                 <h3 className="text-xl font-bold">Acceso seguro</h3>

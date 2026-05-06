@@ -10,6 +10,7 @@ import { useAuth } from "../../core/context/AuthContext"
 
 function ZonasPage() {
   const { isAdmin } = useAuth()
+  const canEdit = isAdmin
 
   const [zonas, setZonas] = useState([])
   const [predios, setPredios] = useState([])
@@ -156,13 +157,13 @@ function ZonasPage() {
         <p style={{ color: "#f87171", marginBottom: "16px" }}>{error}</p>
       )}
 
-      {isAdmin && predios.length === 0 && (
+      {canEdit && predios.length === 0 && (
         <p style={{ color: "#f59e0b", marginBottom: "16px" }}>
           Primero debes crear al menos un predio para registrar zonas.
         </p>
       )}
 
-      {isAdmin && (
+      {canEdit && (
         <div style={{ ...cardStyle, marginBottom: "24px" }}>
           <h3 style={{ marginBottom: "16px" }}>
             {editingId ? "Editar zona" : "Nueva zona"}
@@ -303,7 +304,7 @@ function ZonasPage() {
               <p><strong>Descripción:</strong> {zona.descripcion || "Sin descripción"}</p>
               <p><strong>Activa:</strong> {zona.activa ? "Sí" : "No"}</p>
 
-              {isAdmin && (
+              {canEdit && (
                 <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
                   <button
                     onClick={() => handleEdit(zona)}

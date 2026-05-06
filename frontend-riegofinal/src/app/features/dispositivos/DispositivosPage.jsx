@@ -9,7 +9,8 @@ import { getZonasRequest } from "../../core/services/zona.service"
 import { useAuth } from "../../core/context/AuthContext"
 
 function DispositivosPage() {
-  const { isAdmin } = useAuth()
+  const { isAdmin, hasRole } = useAuth()
+  const canEdit = isAdmin || hasRole("OPERADOR")
 
   const [devices, setDevices] = useState([])
   const [zonas, setZonas] = useState([])
@@ -161,7 +162,7 @@ function DispositivosPage() {
         <p style={{ color: "#f87171", marginBottom: "16px" }}>{error}</p>
       )}
 
-      {isAdmin && (
+      {canEdit && (
         <div style={{ ...cardStyle, marginBottom: "24px" }}>
           <h3 style={{ marginBottom: "16px" }}>
             {editingId ? "Editar dispositivo" : "Nuevo dispositivo"}
@@ -328,7 +329,7 @@ function DispositivosPage() {
               <p><strong>MAC:</strong> {device.mac_address || "No definida"}</p>
               <p><strong>Zona:</strong> {device.zona?.nombre || "Sin zona"}</p>
 
-              {isAdmin && (
+              {canEdit && (
                 <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
                   <button
                     onClick={() => handleEdit(device)}

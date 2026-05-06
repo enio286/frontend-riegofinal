@@ -10,30 +10,36 @@ import {
   Bell,
   Users,
   Shield,
-  UserCog,
   X,
 } from "lucide-react"
 import { useAuth } from "../../core/context/AuthContext"
 
 function Sidebar({ sidebarOpen, sidebarCollapsed, onClose }) {
-  const { isAdmin } = useAuth()
+  const { isAdmin, hasRole } = useAuth()
+
+  const canSeeOperational = isAdmin || hasRole("OPERADOR") || hasRole("VISOR")
 
   const navItems = [
     { to: "/app", label: "Dashboard", icon: LayoutDashboard },
-    { to: "/app/predios", label: "Predios", icon: MapPinned },
-    { to: "/app/zonas", label: "Zonas", icon: Map },
-    { to: "/app/dispositivos", label: "Dispositivos", icon: Cpu },
-    { to: "/app/sensores", label: "Sensores", icon: Waves },
-    { to: "/app/bombas", label: "Bombas", icon: Droplets },
-    { to: "/app/configuraciones", label: "Configuraciones", icon: Settings2 },
-    { to: "/app/alertas", label: "Alertas", icon: Bell },
+    ...(canSeeOperational
+      ? [
+          { to: "/app/predios", label: "Predios", icon: MapPinned },
+          { to: "/app/zonas", label: "Zonas", icon: Map },
+          { to: "/app/dispositivos", label: "Dispositivos", icon: Cpu },
+          { to: "/app/sensores", label: "Sensores", icon: Waves },
+          { to: "/app/bombas", label: "Bombas", icon: Droplets },
+          { to: "/app/configuraciones", label: "Configuraciones", icon: Settings2 },
+          { to: "/app/alertas", label: "Alertas", icon: Bell },
+        ]
+      : []),
   ]
 
-  const adminItems = [
-    { to: "/app/usuarios", label: "Usuarios", icon: Users },
-    { to: "/app/roles", label: "Roles", icon: Shield },
-    { to: "/app/usuarios-roles", label: "Usuarios-Roles", icon: UserCog },
-  ]
+  const adminItems = isAdmin
+    ? [
+        { to: "/app/usuarios", label: "Usuarios", icon: Users },
+        { to: "/app/roles", label: "Roles", icon: Shield },
+      ]
+    : []
 
   const widthClass = sidebarCollapsed ? "lg:w-24" : "lg:w-72"
 
@@ -98,7 +104,7 @@ function Sidebar({ sidebarOpen, sidebarCollapsed, onClose }) {
           })}
         </nav>
 
-        {isAdmin && (
+        {adminItems.length > 0 && (
           <div className="mt-8">
             <p
               className={`mb-3 px-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 ${

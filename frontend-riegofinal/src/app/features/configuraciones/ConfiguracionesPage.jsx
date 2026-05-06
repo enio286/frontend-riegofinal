@@ -10,6 +10,7 @@ import { useAuth } from "../../core/context/AuthContext"
 
 function ConfiguracionesPage() {
   const { isAdmin } = useAuth()
+  const canEdit = isAdmin
 
   const [configuraciones, setConfiguraciones] = useState([])
   const [zonas, setZonas] = useState([])
@@ -153,7 +154,7 @@ function ConfiguracionesPage() {
 
       {error && <p style={{ color: "#f87171", marginBottom: "16px" }}>{error}</p>}
 
-      {isAdmin && (
+      {canEdit && (
         <div style={{ ...cardStyle, marginBottom: "24px" }}>
           <h3 style={{ marginBottom: "16px" }}>
             {editingId ? "Editar configuración" : "Nueva configuración"}
@@ -263,7 +264,7 @@ function ConfiguracionesPage() {
               <p><strong>Riego habilitado:</strong> {config.riego_habilitado ? "Sí" : "No"}</p>
               <p><strong>Vigente:</strong> {config.vigente ? "Sí" : "No"}</p>
 
-              {isAdmin && (
+              {canEdit && (
                 <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
                   <button
                     onClick={() => handleEdit(config)}

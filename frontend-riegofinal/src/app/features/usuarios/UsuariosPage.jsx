@@ -24,6 +24,7 @@ function UsuariosPage() {
     first_name: "",
     last_name: "",
     password: "",
+    confirm_password: "",
     is_active: true,
     role_name: "",
   })
@@ -73,6 +74,7 @@ function UsuariosPage() {
       first_name: "",
       last_name: "",
       password: "",
+      confirm_password: "",
       is_active: true,
       role_name: "",
     })
@@ -93,6 +95,26 @@ function UsuariosPage() {
     setError("")
 
     try {
+      if (!formData.role_name) {
+        setError("Debes seleccionar un rol")
+        setSaving(false)
+        return
+      }
+
+      if (!editingId && !formData.password) {
+        setError("La contraseña es obligatoria")
+        setSaving(false)
+        return
+      }
+
+      if (formData.password || formData.confirm_password) {
+        if (formData.password !== formData.confirm_password) {
+          setError("Las contraseñas no coinciden")
+          setSaving(false)
+          return
+        }
+      }
+
       const payload = {
         username: formData.username,
         email: formData.email,
@@ -100,7 +122,7 @@ function UsuariosPage() {
         last_name: formData.last_name,
         password: formData.password,
         is_active: formData.is_active,
-        role_names: formData.role_name ? [formData.role_name] : [],
+        role_name: formData.role_name,
       }
 
       if (editingId) {
@@ -127,8 +149,9 @@ function UsuariosPage() {
       first_name: usuario.first_name || "",
       last_name: usuario.last_name || "",
       password: "",
+      confirm_password: "",
       is_active: !!usuario.is_active,
-      role_name: usuario.roles?.[0] || "",
+      role_name: usuario.primary_role || usuario.roles?.[0] || "",
     })
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
@@ -154,7 +177,7 @@ function UsuariosPage() {
     <div>
       <h2 style={{ marginBottom: "12px" }}>Usuarios de acceso</h2>
       <p style={{ color: "#94a3b8", marginBottom: "20px" }}>
-        Crea usuarios reales para entrar al sistema y asígnales rol.
+        Crea usuarios reales para entrar al sistema y asígnales un rol.
       </p>
 
       {error && <p style={{ color: "#f87171", marginBottom: "16px" }}>{error}</p>}
@@ -187,8 +210,25 @@ function UsuariosPage() {
             </div>
 
             <div>
-              <label>{editingId ? "Nueva contraseña (opcional)" : "Contraseña"}</label>
-              <input name="password" value={formData.password} onChange={handleChange} style={inputStyle} />
+              <label>{editingId ? "Nueva contraseña" : "Contraseña"}</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                style={inputStyle}
+              />
+            </div>
+
+            <div>
+              <label>Confirmar contraseña</label>
+              <input
+                type="password"
+                name="confirm_password"
+                value={formData.confirm_password}
+                onChange={handleChange}
+                style={inputStyle}
+              />
             </div>
 
             <div>
@@ -244,7 +284,7 @@ function UsuariosPage() {
               <p><strong>Email:</strong> {usuario.email || "No definido"}</p>
               <p><strong>Nombre:</strong> {usuario.first_name || "-"} {usuario.last_name || ""}</p>
               <p><strong>Activo:</strong> {usuario.is_active ? "Sí" : "No"}</p>
-              <p><strong>Roles:</strong> {usuario.roles?.join(", ") || "Sin rol"}</p>
+              <p><strong>Rol:</strong> {usuario.primary_role || usuario.roles?.[0] || "Sin rol"}</p>
 
               <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
                 <button onClick={() => handleEdit(usuario)}>Editar</button>

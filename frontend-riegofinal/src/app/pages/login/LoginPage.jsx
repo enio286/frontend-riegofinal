@@ -29,7 +29,7 @@ function LoginPage() {
     try {
       await login(formData.username, formData.password)
       navigate("/app")
-    } catch  {
+    } catch {
       setError("Credenciales inválidas o error de conexión")
     } finally {
       setLoading(false)

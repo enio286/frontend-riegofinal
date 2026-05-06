@@ -10,7 +10,8 @@ import { getZonasRequest } from "../../core/services/zona.service"
 import { useAuth } from "../../core/context/AuthContext"
 
 function AlertasPage() {
-  const { isAdmin } = useAuth()
+  const { isAdmin, hasRole } = useAuth()
+  const canEdit = isAdmin || hasRole("OPERADOR")
 
   const [alertas, setAlertas] = useState([])
   const [dispositivos, setDispositivos] = useState([])
@@ -152,7 +153,7 @@ function AlertasPage() {
 
       {error && <p style={{ color: "#f87171", marginBottom: "16px" }}>{error}</p>}
 
-      {isAdmin && (
+      {canEdit && (
         <div style={{ ...cardStyle, marginBottom: "24px" }}>
           <h3 style={{ marginBottom: "16px" }}>
             {editingId ? "Editar alerta" : "Nueva alerta"}
@@ -269,7 +270,7 @@ function AlertasPage() {
               <p><strong>Mensaje:</strong> {alerta.mensaje}</p>
               <p><strong>Atendida:</strong> {alerta.atendida ? "Sí" : "No"}</p>
 
-              {isAdmin && (
+              {canEdit && (
                 <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
                   <button
                     onClick={() => handleEdit(alerta)}

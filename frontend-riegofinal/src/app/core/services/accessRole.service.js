@@ -7,24 +7,3 @@ export async function getAccessRolesRequest() {
   })
   return response.data
 }
-
-export async function createAccessRoleRequest(payload) {
-  const response = await api.post("/access-roles/", payload, {
-    headers: getAuthHeader(),
-  })
-  return response.data
-}
-
-export async function updateAccessRoleRequest(id, payload) {
-  const response = await api.put(`/access-roles/${id}/`, payload, {
-    headers: getAuthHeader(),
-  })
-  return response.data
-}
-
-export async function deleteAccessRoleRequest(id) {
-  const response = await api.delete(`/access-roles/${id}/`, {
-    headers: getAuthHeader(),
-  })
-  return response.data
-}

@@ -14,7 +14,6 @@ import ConfiguracionesPage from "../features/configuraciones/ConfiguracionesPage
 import AlertasPage from "../features/alertas/AlertasPage"
 import UsuariosPage from "../features/usuarios/UsuariosPage"
 import RolesPage from "../features/roles/RolesPage"
-import UsuariosRolesPage from "../features/usuarios-roles/UsuariosRolesPage"
 import ProtectedRoute from "../core/guards/ProtectedRoute"
 
 function AppRouter() {
@@ -34,13 +33,69 @@ function AppRouter() {
           }
         >
           <Route index element={<DashboardPage />} />
-          <Route path="predios" element={<PrediosPage />} />
-          <Route path="zonas" element={<ZonasPage />} />
-          <Route path="dispositivos" element={<DispositivosPage />} />
-          <Route path="sensores" element={<SensoresPage />} />
-          <Route path="bombas" element={<BombasPage />} />
-          <Route path="configuraciones" element={<ConfiguracionesPage />} />
-          <Route path="alertas" element={<AlertasPage />} />
+
+          <Route
+            path="predios"
+            element={
+              <ProtectedRoute allowedRoles={["ADMIN", "OPERADOR", "VISOR"]}>
+                <PrediosPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="zonas"
+            element={
+              <ProtectedRoute allowedRoles={["ADMIN", "OPERADOR", "VISOR"]}>
+                <ZonasPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="dispositivos"
+            element={
+              <ProtectedRoute allowedRoles={["ADMIN", "OPERADOR", "VISOR"]}>
+                <DispositivosPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="sensores"
+            element={
+              <ProtectedRoute allowedRoles={["ADMIN", "OPERADOR", "VISOR"]}>
+                <SensoresPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="bombas"
+            element={
+              <ProtectedRoute allowedRoles={["ADMIN", "OPERADOR", "VISOR"]}>
+                <BombasPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="configuraciones"
+            element={
+              <ProtectedRoute allowedRoles={["ADMIN", "OPERADOR", "VISOR"]}>
+                <ConfiguracionesPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="alertas"
+            element={
+              <ProtectedRoute allowedRoles={["ADMIN", "OPERADOR", "VISOR"]}>
+                <AlertasPage />
+              </ProtectedRoute>
+            }
+          />
 
           <Route
             path="usuarios"
@@ -56,15 +111,6 @@ function AppRouter() {
             element={
               <ProtectedRoute adminOnly={true}>
                 <RolesPage />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="usuarios-roles"
-            element={
-              <ProtectedRoute adminOnly={true}>
-                <UsuariosRolesPage />
               </ProtectedRoute>
             }
           />

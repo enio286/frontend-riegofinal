@@ -9,6 +9,7 @@ import { useAuth } from "../../core/context/AuthContext"
 
 function PrediosPage() {
   const { isAdmin } = useAuth()
+  const canEdit = isAdmin
 
   const [predios, setPredios] = useState([])
   const [loading, setLoading] = useState(true)
@@ -140,7 +141,7 @@ function PrediosPage() {
         <p style={{ color: "#f87171", marginBottom: "16px" }}>{error}</p>
       )}
 
-      {isAdmin && (
+      {canEdit && (
         <div style={{ ...cardStyle, marginBottom: "24px" }}>
           <h3 style={{ marginBottom: "16px" }}>
             {editingId ? "Editar predio" : "Nuevo predio"}
@@ -250,7 +251,7 @@ function PrediosPage() {
               <p><strong>Descripción:</strong> {predio.descripcion || "Sin descripción"}</p>
               <p><strong>Activo:</strong> {predio.activo ? "Sí" : "No"}</p>
 
-              {isAdmin && (
+              {canEdit && (
                 <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
                   <button
                     onClick={() => handleEdit(predio)}

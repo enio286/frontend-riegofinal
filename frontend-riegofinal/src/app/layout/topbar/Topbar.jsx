@@ -1,4 +1,10 @@
-import { LogOut, Menu, PanelLeftClose, PanelLeftOpen, UserCircle2 } from "lucide-react"
+import {
+  LogOut,
+  Menu,
+  PanelLeftClose,
+  PanelLeftOpen,
+  UserCircle2,
+} from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../../core/context/AuthContext"
 

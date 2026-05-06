@@ -10,7 +10,8 @@ import { getZonasRequest } from "../../core/services/zona.service"
 import { useAuth } from "../../core/context/AuthContext"
 
 function BombasPage() {
-  const { isAdmin } = useAuth()
+  const { isAdmin, hasRole } = useAuth()
+  const canEdit = isAdmin || hasRole("OPERADOR")
 
   const [bombas, setBombas] = useState([])
   const [dispositivos, setDispositivos] = useState([])
@@ -153,7 +154,7 @@ function BombasPage() {
 
       {error && <p style={{ color: "#f87171", marginBottom: "16px" }}>{error}</p>}
 
-      {isAdmin && (
+      {canEdit && (
         <div style={{ ...cardStyle, marginBottom: "24px" }}>
           <h3 style={{ marginBottom: "16px" }}>
             {editingId ? "Editar bomba" : "Nueva bomba"}
@@ -265,7 +266,7 @@ function BombasPage() {
               <p><strong>Estado:</strong> {bomba.estado_actual}</p>
               <p><strong>Activa:</strong> {bomba.activa ? "Sí" : "No"}</p>
 
-              {isAdmin && (
+              {canEdit && (
                 <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
                   <button
                     onClick={() => handleEdit(bomba)}
