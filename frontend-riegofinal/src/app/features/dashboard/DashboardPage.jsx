@@ -87,6 +87,7 @@ function DashboardPage() {
   const tankLevelValue = telemetry?.nivel_tanque_pct ?? null
   const pumpActive = telemetry?.bomba_activa ?? false
   const modeValue = telemetry?.modo || "AUTO"
+  const isAutoMode = modeValue === "AUTO"
 
   const tankStatus = useMemo(() => {
     if (tankLevelValue === null || tankLevelValue === undefined) return "Sin dato"
@@ -371,44 +372,111 @@ function DashboardPage() {
                   </h3>
                 </div>
 
-                <div className="rounded-[24px] border border-[#1c2a22] bg-[#0b120f] p-5">
-                  <p className="text-[#9fb7a7]">Estado actual</p>
-                  <div className="mt-3 flex items-center justify-between">
-                    <span className="text-2xl font-bold text-[#ecfff1]">
-                      {pumpActive ? "Encendida" : "Apagada"}
-                    </span>
-                    <span
-                      className={`rounded-full px-4 py-1 text-sm font-medium ${
-                        pumpActive
-                          ? "bg-[#7CFF6B] text-[#08110b] shadow-[0_0_18px_rgba(124,255,107,0.18)]"
-                          : "bg-[#101914] text-[#d7eadb]"
-                      }`}
-                    >
-                      {pumpActive ? "ACTIVA" : "INACTIVA"}
-                    </span>
+                <div className="space-y-4">
+                  <div className="rounded-[24px] border border-[#1c2a22] bg-[#0b120f] p-5">
+                    <p className="text-[#9fb7a7]">Estado actual</p>
+                    <div className="mt-3 flex items-center justify-between">
+                      <span className="text-2xl font-bold text-[#ecfff1]">
+                        {pumpActive ? "Encendida" : "Apagada"}
+                      </span>
+                      <span
+                        className={`rounded-full px-4 py-1 text-sm font-medium ${
+                          pumpActive
+                            ? "bg-[#7CFF6B] text-[#08110b] shadow-[0_0_18px_rgba(124,255,107,0.18)]"
+                            : "bg-[#101914] text-[#d7eadb]"
+                        }`}
+                      >
+                        {pumpActive ? "ACTIVA" : "INACTIVA"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-[24px] border border-[#1c2a22] bg-[#0b120f] p-5">
+                    <p className="text-[#9fb7a7]">Modo de operación</p>
+                    <div className="mt-3 flex items-center justify-between">
+                      <span className="text-2xl font-bold text-[#ecfff1]">
+                        {isAutoMode ? "Automático" : "Manual"}
+                      </span>
+                      <span
+                        className={`rounded-full px-4 py-1 text-sm font-medium ${
+                          isAutoMode
+                            ? "bg-[#39d353] text-[#08110b]"
+                            : "bg-[#223328] text-[#d7eadb]"
+                        }`}
+                      >
+                        {modeValue}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
                 {canControlPump ? (
-                  <div className="mt-5 grid grid-cols-2 gap-3">
-                    <button
-                      onClick={() => sendCommand("ENCENDER_BOMBA")}
-                      disabled={commandLoading}
-                      className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#7CFF6B] px-4 py-4 text-lg font-semibold text-[#08110b] shadow-[0_0_18px_rgba(124,255,107,0.2)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      <Play size={18} />
-                      Encender
-                    </button>
+                  <>
+                    <div className="mt-5">
+                      <p className="mb-3 text-sm font-medium text-[#9fb7a7]">
+                        Cambiar modo
+                      </p>
 
-                    <button
-                      onClick={() => sendCommand("APAGAR_BOMBA")}
-                      disabled={commandLoading}
-                      className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#2f1d1d] bg-[#1a1010] px-4 py-4 text-lg font-semibold text-[#ffd6d6] transition hover:border-red-500/40 hover:bg-[#221414] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      <Square size={18} />
-                      Apagar
-                    </button>
-                  </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          onClick={() => sendCommand("MODO_AUTO")}
+                          disabled={commandLoading || isAutoMode}
+                          className={`rounded-2xl px-4 py-4 text-lg font-semibold transition ${
+                            isAutoMode
+                              ? "cursor-not-allowed bg-[#39d353] text-[#08110b]"
+                              : "border border-[#223328] bg-[#101914] text-[#d7eadb] hover:border-[#7CFF6B] hover:text-[#7CFF6B]"
+                          } disabled:opacity-60`}
+                        >
+                          AUTO
+                        </button>
+
+                        <button
+                          onClick={() => sendCommand("MODO_MANUAL")}
+                          disabled={commandLoading || !isAutoMode}
+                          className={`rounded-2xl px-4 py-4 text-lg font-semibold transition ${
+                            !isAutoMode
+                              ? "cursor-not-allowed bg-[#7CFF6B] text-[#08110b]"
+                              : "border border-[#223328] bg-[#101914] text-[#d7eadb] hover:border-[#7CFF6B] hover:text-[#7CFF6B]"
+                          } disabled:opacity-60`}
+                        >
+                          MANUAL
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="mt-5">
+                      <p className="mb-3 text-sm font-medium text-[#9fb7a7]">
+                        Control manual
+                      </p>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          onClick={() => sendCommand("ENCENDER_BOMBA")}
+                          disabled={commandLoading}
+                          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#7CFF6B] px-4 py-4 text-lg font-semibold text-[#08110b] shadow-[0_0_18px_rgba(124,255,107,0.2)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          <Play size={18} />
+                          Encender
+                        </button>
+
+                        <button
+                          onClick={() => sendCommand("APAGAR_BOMBA")}
+                          disabled={commandLoading}
+                          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#2f1d1d] bg-[#1a1010] px-4 py-4 text-lg font-semibold text-[#ffd6d6] transition hover:border-red-500/40 hover:bg-[#221414] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          <Square size={18} />
+                          Apagar
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 rounded-2xl border border-[#1c2a22] bg-[#0b120f] px-4 py-4 text-sm text-[#9fb7a7]">
+                      En modo <span className="font-semibold text-[#ecfff1]">AUTO</span>, el
+                      ESP32 decide según humedad y nivel del tanque. En modo{" "}
+                      <span className="font-semibold text-[#ecfff1]">MANUAL</span>, puedes
+                      controlar la bomba directamente.
+                    </div>
+                  </>
                 ) : (
                   <div className="mt-5 rounded-2xl border border-[#1c2a22] bg-[#0b120f] px-4 py-4 text-sm text-[#d7eadb]">
                     Tu rol puede visualizar el estado, pero no controlar la bomba.
@@ -438,6 +506,10 @@ function DashboardPage() {
                   <li>
                     • Si la bomba responde invertida, cambia la lógica HIGH/LOW del relé
                     en el código del ESP32.
+                  </li>
+                  <li>
+                    • En modo automático, el ESP32 controla el riego según los umbrales
+                    programados.
                   </li>
                 </ul>
               </div>

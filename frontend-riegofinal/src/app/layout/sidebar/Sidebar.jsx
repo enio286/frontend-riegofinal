@@ -1,8 +1,6 @@
 import { NavLink } from "react-router-dom"
 import {
   LayoutDashboard,
-  MapPinned,
-  Map,
   Cpu,
   Waves,
   Droplets,
@@ -24,12 +22,14 @@ function Sidebar({ sidebarOpen, sidebarCollapsed, onClose }) {
     { to: "/app", label: "Dashboard", icon: LayoutDashboard },
     ...(canSeeOperational
       ? [
-          { to: "/app/predios", label: "Predios", icon: MapPinned },
-          { to: "/app/zonas", label: "Zonas", icon: Map },
-          { to: "/app/dispositivos", label: "Dispositivos", icon: Cpu },
+          { to: "/app/dispositivos", label: "ESP32", icon: Cpu },
           { to: "/app/sensores", label: "Sensores", icon: Waves },
-          { to: "/app/bombas", label: "Bombas", icon: Droplets },
-          { to: "/app/configuraciones", label: "Configuraciones", icon: Settings2 },
+          { to: "/app/bombas", label: "Bomba", icon: Droplets },
+          {
+            to: "/app/configuraciones",
+            label: "Control automático",
+            icon: Settings2,
+          },
           { to: "/app/alertas", label: "Alertas", icon: Bell },
         ]
       : []),
