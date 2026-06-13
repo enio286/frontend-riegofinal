@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import AppLayout from "../layout/AppLayout"
 import LoginPage from "../pages/login/LoginPage"
 import HomePage from "../pages/home/HomePage"
+import ForgotPasswordPage from "../pages/forgot-password/ForgotPasswordPage"
+import ResetPasswordPage from "../pages/reset-password/ResetPasswordPage"
 import NotFoundPage from "../pages/not-found/NotFoundPage"
 import UnauthorizedPage from "../pages/unauthorized/UnauthorizedPage"
 import DashboardPage from "../features/dashboard/DashboardPage"
@@ -22,6 +24,8 @@ function AppRouter() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:uid/:token" element={<ResetPasswordPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
         <Route

@@ -5,12 +5,13 @@ import {
   Waves,
   Gauge,
   Power,
-  Activity,
   RefreshCw,
   Play,
   Square,
   Cpu,
   AlertTriangle,
+  Radar,
+  Leaf,
 } from "lucide-react"
 import {
   getLatestTelemetryRequest,
@@ -68,7 +69,7 @@ function DashboardPage() {
       setSuccess(`Comando ${accion} enviado correctamente`)
       setTimeout(() => {
         loadTelemetry(true)
-      }, 1000)
+      }, 1200)
     } catch (err) {
       console.error("ERROR COMANDO MQTT:", err)
       console.error("RESPONSE:", err?.response)
@@ -101,7 +102,7 @@ function DashboardPage() {
     }
 
     if (tankLevelValue !== null && tankLevelValue <= 10) {
-      return "No regar: nivel de tanque demasiado bajo"
+      return "No regar: tanque demasiado bajo"
     }
 
     if (humidityValue < 30) {
@@ -124,12 +125,14 @@ function DashboardPage() {
           : "Sin dato",
       subtitle: "Sensor capacitivo",
       icon: Droplets,
-      accent: "bg-emerald-500/10 text-emerald-400",
+      iconClass: "text-[#7CFF6B]",
+      iconBg: "bg-[#101914]",
       bar:
         humidityValue !== null && humidityValue !== undefined
           ? `${Math.max(0, Math.min(100, humidityValue))}%`
           : "0%",
-      barClass: "bg-emerald-400",
+      barClass: "bg-[#7CFF6B]",
+      glow: "shadow-[0_0_22px_rgba(124,255,107,0.14)]",
     },
     {
       title: "Temperatura ambiente",
@@ -139,12 +142,14 @@ function DashboardPage() {
           : "Sin dato",
       subtitle: "DHT11",
       icon: Thermometer,
-      accent: "bg-orange-500/10 text-orange-400",
+      iconClass: "text-[#8bffb5]",
+      iconBg: "bg-[#101914]",
       bar:
         temperatureValue !== null && temperatureValue !== undefined
           ? `${Math.max(0, Math.min(100, temperatureValue * 2))}%`
           : "0%",
-      barClass: "bg-orange-400",
+      barClass: "bg-[#39d353]",
+      glow: "shadow-[0_0_22px_rgba(57,211,83,0.12)]",
     },
     {
       title: "Humedad ambiente",
@@ -154,12 +159,14 @@ function DashboardPage() {
           : "Sin dato",
       subtitle: "DHT11",
       icon: Waves,
-      accent: "bg-cyan-500/10 text-cyan-400",
+      iconClass: "text-[#7CFF6B]",
+      iconBg: "bg-[#101914]",
       bar:
         ambientHumidityValue !== null && ambientHumidityValue !== undefined
           ? `${Math.max(0, Math.min(100, ambientHumidityValue))}%`
           : "0%",
-      barClass: "bg-cyan-400",
+      barClass: "bg-[#7CFF6B]",
+      glow: "shadow-[0_0_22px_rgba(124,255,107,0.14)]",
     },
     {
       title: "Nivel del tanque",
@@ -169,96 +176,103 @@ function DashboardPage() {
           : "Sin dato",
       subtitle: tankStatus,
       icon: Gauge,
-      accent: "bg-lime-500/10 text-lime-400",
+      iconClass: "text-[#b7ff5e]",
+      iconBg: "bg-[#101914]",
       bar:
         tankLevelValue !== null && tankLevelValue !== undefined
           ? `${Math.max(0, Math.min(100, tankLevelValue))}%`
           : "0%",
-      barClass: "bg-lime-400",
+      barClass: "bg-[#b7ff5e]",
+      glow: "shadow-[0_0_22px_rgba(183,255,94,0.12)]",
     },
   ]
 
   return (
-    <div className="space-y-6">
-      <section className="rounded-[28px] border border-slate-800 bg-gradient-to-r from-slate-900 to-slate-900/70 p-6 shadow-xl shadow-slate-950/30 md:p-8">
-        <p className="text-sm font-medium text-teal-400">Monitoreo IoT en tiempo real</p>
+    <div className="space-y-6 bg-[#0a0f0d] text-[#ecfff1]">
+      <section className="overflow-hidden rounded-[30px] border border-[#1c2a22] bg-gradient-to-br from-[#0f1713] via-[#101914] to-[#0c130f] p-6 shadow-[0_0_40px_rgba(124,255,107,0.05)] md:p-8">
+        <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+          <div className="max-w-4xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#223328] bg-[#101914] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#7CFF6B] shadow-[0_0_18px_rgba(124,255,107,0.08)]">
+              <Leaf size={14} />
+              Telemetría IoT
+            </div>
 
-        <h2 className="mt-3 text-4xl font-bold tracking-tight text-white md:text-5xl">
-          Dashboard de riego inteligente
-        </h2>
+            <h2 className="mt-4 text-4xl font-bold tracking-tight text-[#ecfff1] md:text-5xl">
+              Dashboard de riego inteligente
+            </h2>
 
-        <p className="mt-4 max-w-3xl text-base leading-7 text-slate-300 md:text-lg">
-          Visualiza telemetría real del ESP32, nivel del tanque, estado de la bomba
-          y recomendación automática de riego. Bienvenido,{" "}
-          <span className="font-semibold text-white">
-            {user?.username || "Usuario"}
-          </span>
-          .
-        </p>
+            <p className="mt-4 max-w-3xl text-base leading-8 text-[#9fb7a7] md:text-lg">
+              Visualiza telemetría real del ESP32, nivel del tanque, estado de la
+              bomba y recomendación automática de riego. Bienvenido,{" "}
+              <span className="font-semibold text-[#ecfff1]">
+                {user?.username || "Usuario"}
+              </span>
+              .
+            </p>
+          </div>
 
-        <div className="mt-6 grid gap-4 rounded-[24px] border border-slate-800 bg-slate-950/70 p-4 md:grid-cols-[1fr_auto] md:items-center">
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-2xl border border-slate-800 bg-slate-900 px-4 py-3">
-              <p className="text-xs uppercase tracking-wide text-slate-500">
+          <div className="grid gap-3 md:grid-cols-3 xl:min-w-[420px]">
+            <div className="rounded-2xl border border-[#1c2a22] bg-[#0b120f] px-4 py-3">
+              <p className="text-xs uppercase tracking-[0.15em] text-[#9fb7a7]">
                 Dispositivo
               </p>
-              <p className="mt-1 text-sm font-semibold text-white">
+              <p className="mt-1 text-sm font-semibold text-[#ecfff1]">
                 {telemetry?.dispositivo_codigo || "esp32-01"}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-slate-800 bg-slate-900 px-4 py-3">
-              <p className="text-xs uppercase tracking-wide text-slate-500">
+            <div className="rounded-2xl border border-[#1c2a22] bg-[#0b120f] px-4 py-3">
+              <p className="text-xs uppercase tracking-[0.15em] text-[#9fb7a7]">
                 Estado bomba
               </p>
-              <p className="mt-1 text-sm font-semibold text-white">
+              <p className="mt-1 text-sm font-semibold text-[#ecfff1]">
                 {pumpActive ? "Encendida" : "Apagada"}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-slate-800 bg-slate-900 px-4 py-3">
-              <p className="text-xs uppercase tracking-wide text-slate-500">
+            <div className="rounded-2xl border border-[#1c2a22] bg-[#0b120f] px-4 py-3">
+              <p className="text-xs uppercase tracking-[0.15em] text-[#9fb7a7]">
                 Modo
               </p>
-              <p className="mt-1 text-sm font-semibold text-white">
+              <p className="mt-1 text-sm font-semibold text-[#ecfff1]">
                 {modeValue}
               </p>
             </div>
           </div>
+        </div>
 
-          <div className="flex md:justify-end">
-            <button
-              onClick={() => loadTelemetry(true)}
-              disabled={refreshing}
-              className="inline-flex items-center gap-2 rounded-2xl bg-slate-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
-              {refreshing ? "Actualizando..." : "Refrescar"}
-            </button>
-          </div>
+        <div className="mt-6 flex">
+          <button
+            onClick={() => loadTelemetry(true)}
+            disabled={refreshing}
+            className="inline-flex items-center gap-2 rounded-2xl border border-[#223328] bg-[#101914] px-5 py-3 text-sm font-semibold text-[#d7eadb] transition hover:border-[#7CFF6B] hover:text-[#7CFF6B] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
+            {refreshing ? "Actualizando..." : "Refrescar"}
+          </button>
         </div>
       </section>
 
       {success && (
-        <div className="rounded-[24px] border border-emerald-900 bg-emerald-950/30 p-4 text-emerald-300">
+        <div className="rounded-[24px] border border-[#23402a] bg-[#101914] p-4 text-[#8bffb5] shadow-[0_0_20px_rgba(124,255,107,0.08)]">
           {success}
         </div>
       )}
 
       {error && (
-        <div className="rounded-[24px] border border-red-900 bg-red-950/40 p-4 text-red-300">
+        <div className="rounded-[24px] border border-[#442323] bg-[#1a1010] p-4 text-[#ffb3b3]">
           {error}
         </div>
       )}
 
       {loading && (
-        <div className="rounded-[24px] border border-slate-800 bg-slate-900 p-6 text-slate-300">
+        <div className="rounded-[24px] border border-[#1c2a22] bg-[#0f1713] p-6 text-[#d7eadb]">
           Cargando telemetría del ESP32...
         </div>
       )}
 
       {!loading && !telemetry && !error && (
-        <div className="rounded-[24px] border border-slate-800 bg-slate-900 p-6 text-slate-300">
+        <div className="rounded-[24px] border border-[#1c2a22] bg-[#0f1713] p-6 text-[#d7eadb]">
           Aún no hay telemetría registrada. Verifica que el ESP32 esté encendido y
           publicando por MQTT.
         </div>
@@ -273,23 +287,23 @@ function DashboardPage() {
               return (
                 <div
                   key={card.title}
-                  className="rounded-[28px] border border-slate-800 bg-slate-900 p-6 shadow-lg shadow-slate-950/20"
+                  className={`rounded-[28px] border border-[#1c2a22] bg-[#0f1713] p-6 ${card.glow}`}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="text-lg text-slate-400">{card.title}</p>
-                      <h3 className="mt-3 text-5xl font-bold text-white">
+                      <p className="text-lg text-[#9fb7a7]">{card.title}</p>
+                      <h3 className="mt-3 text-5xl font-bold text-[#ecfff1]">
                         {card.value}
                       </h3>
-                      <p className="mt-2 text-sm text-slate-400">{card.subtitle}</p>
+                      <p className="mt-2 text-sm text-[#7f9788]">{card.subtitle}</p>
                     </div>
 
-                    <div className={`rounded-2xl p-3 ${card.accent}`}>
-                      <Icon size={22} />
+                    <div className={`rounded-2xl p-3 ${card.iconBg}`}>
+                      <Icon size={22} className={card.iconClass} />
                     </div>
                   </div>
 
-                  <div className="mt-5 h-3 w-full rounded-full bg-slate-800">
+                  <div className="mt-5 h-3 w-full rounded-full bg-[#0a0f0d]">
                     <div
                       className={`h-3 rounded-full ${card.barClass}`}
                       style={{ width: card.bar }}
@@ -301,45 +315,45 @@ function DashboardPage() {
           </section>
 
           <section className="grid gap-6 xl:grid-cols-[1.5fr,1fr]">
-            <div className="rounded-[28px] border border-slate-800 bg-slate-900 p-6 shadow-lg shadow-slate-950/20">
+            <div className="rounded-[28px] border border-[#1c2a22] bg-[#0f1713] p-6 shadow-[0_0_30px_rgba(0,0,0,0.2)]">
               <div className="mb-5 flex items-center gap-3">
-                <div className="rounded-2xl bg-teal-500/10 p-3 text-teal-400">
-                  <Cpu size={18} />
+                <div className="rounded-2xl bg-[#101914] p-3 text-[#7CFF6B]">
+                  <Radar size={18} />
                 </div>
-                <h3 className="text-2xl font-semibold text-white">
+                <h3 className="text-2xl font-semibold text-[#ecfff1]">
                   Resumen del sistema
                 </h3>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4">
-                  <p className="text-slate-400">Distancia ultrasónica</p>
-                  <h4 className="mt-2 text-3xl font-bold text-white">
+                <div className="rounded-2xl border border-[#1c2a22] bg-[#0b120f] p-4">
+                  <p className="text-[#9fb7a7]">Distancia ultrasónica</p>
+                  <h4 className="mt-2 text-3xl font-bold text-[#ecfff1]">
                     {distanceValue !== null && distanceValue !== undefined
                       ? `${distanceValue.toFixed(2)} cm`
                       : "Sin dato"}
                   </h4>
                 </div>
 
-                <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4">
-                  <p className="text-slate-400">Última lectura</p>
-                  <h4 className="mt-2 text-lg font-bold text-white">
+                <div className="rounded-2xl border border-[#1c2a22] bg-[#0b120f] p-4">
+                  <p className="text-[#9fb7a7]">Última lectura</p>
+                  <h4 className="mt-2 text-lg font-bold text-[#ecfff1]">
                     {telemetry?.fecha_hora
                       ? new Date(telemetry.fecha_hora).toLocaleString()
                       : "Sin fecha"}
                   </h4>
                 </div>
 
-                <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4">
-                  <p className="text-slate-400">Estado del tanque</p>
-                  <h4 className="mt-2 text-3xl font-bold text-white">
+                <div className="rounded-2xl border border-[#1c2a22] bg-[#0b120f] p-4">
+                  <p className="text-[#9fb7a7]">Estado del tanque</p>
+                  <h4 className="mt-2 text-3xl font-bold text-[#ecfff1]">
                     {tankStatus}
                   </h4>
                 </div>
 
-                <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4">
-                  <p className="text-slate-400">Recomendación</p>
-                  <h4 className="mt-2 text-lg font-bold text-white">
+                <div className="rounded-2xl border border-[#1c2a22] bg-[#0b120f] p-4">
+                  <p className="text-[#9fb7a7]">Recomendación</p>
+                  <h4 className="mt-2 text-lg font-bold text-[#ecfff1]">
                     {irrigationRecommendation}
                   </h4>
                 </div>
@@ -347,27 +361,27 @@ function DashboardPage() {
             </div>
 
             <div className="space-y-6">
-              <div className="rounded-[28px] border border-slate-800 bg-slate-900 p-6 shadow-lg shadow-slate-950/20">
+              <div className="rounded-[28px] border border-[#1c2a22] bg-[#0f1713] p-6 shadow-[0_0_30px_rgba(0,0,0,0.2)]">
                 <div className="mb-5 flex items-center gap-3">
-                  <div className="rounded-2xl bg-emerald-500/10 p-3 text-emerald-400">
+                  <div className="rounded-2xl bg-[#101914] p-3 text-[#7CFF6B]">
                     <Power size={18} />
                   </div>
-                  <h3 className="text-2xl font-semibold text-white">
+                  <h3 className="text-2xl font-semibold text-[#ecfff1]">
                     Control de bomba
                   </h3>
                 </div>
 
-                <div className="rounded-[24px] border border-slate-800 bg-slate-950 p-5">
-                  <p className="text-slate-400">Estado actual</p>
+                <div className="rounded-[24px] border border-[#1c2a22] bg-[#0b120f] p-5">
+                  <p className="text-[#9fb7a7]">Estado actual</p>
                   <div className="mt-3 flex items-center justify-between">
-                    <span className="text-2xl font-bold text-white">
+                    <span className="text-2xl font-bold text-[#ecfff1]">
                       {pumpActive ? "Encendida" : "Apagada"}
                     </span>
                     <span
-                      className={`rounded-full px-4 py-1 text-sm ${
+                      className={`rounded-full px-4 py-1 text-sm font-medium ${
                         pumpActive
-                          ? "bg-emerald-500/15 text-emerald-400"
-                          : "bg-slate-800 text-slate-300"
+                          ? "bg-[#7CFF6B] text-[#08110b] shadow-[0_0_18px_rgba(124,255,107,0.18)]"
+                          : "bg-[#101914] text-[#d7eadb]"
                       }`}
                     >
                       {pumpActive ? "ACTIVA" : "INACTIVA"}
@@ -380,7 +394,7 @@ function DashboardPage() {
                     <button
                       onClick={() => sendCommand("ENCENDER_BOMBA")}
                       disabled={commandLoading}
-                      className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-400 px-4 py-4 text-lg font-semibold text-slate-950 transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#7CFF6B] px-4 py-4 text-lg font-semibold text-[#08110b] shadow-[0_0_18px_rgba(124,255,107,0.2)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <Play size={18} />
                       Encender
@@ -389,32 +403,32 @@ function DashboardPage() {
                     <button
                       onClick={() => sendCommand("APAGAR_BOMBA")}
                       disabled={commandLoading}
-                      className="inline-flex items-center justify-center gap-2 rounded-2xl bg-red-500 px-4 py-4 text-lg font-semibold text-white transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#2f1d1d] bg-[#1a1010] px-4 py-4 text-lg font-semibold text-[#ffd6d6] transition hover:border-red-500/40 hover:bg-[#221414] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <Square size={18} />
                       Apagar
                     </button>
                   </div>
                 ) : (
-                  <div className="mt-5 rounded-2xl border border-slate-800 bg-slate-950 px-4 py-4 text-sm text-slate-300">
+                  <div className="mt-5 rounded-2xl border border-[#1c2a22] bg-[#0b120f] px-4 py-4 text-sm text-[#d7eadb]">
                     Tu rol puede visualizar el estado, pero no controlar la bomba.
                   </div>
                 )}
               </div>
 
-              <div className="rounded-[28px] border border-slate-800 bg-slate-900 p-6 shadow-lg shadow-slate-950/20">
+              <div className="rounded-[28px] border border-[#1c2a22] bg-[#0f1713] p-6 shadow-[0_0_30px_rgba(0,0,0,0.2)]">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="rounded-2xl bg-amber-500/10 p-3 text-amber-400">
+                  <div className="rounded-2xl bg-[#101914] p-3 text-[#7CFF6B]">
                     <AlertTriangle size={18} />
                   </div>
-                  <h3 className="text-xl font-semibold text-white">
+                  <h3 className="text-xl font-semibold text-[#ecfff1]">
                     Observaciones
                   </h3>
                 </div>
 
-                <ul className="space-y-3 text-sm text-slate-300">
+                <ul className="space-y-3 text-sm text-[#9fb7a7]">
                   <li>
-                    • Si temperatura y humedad ambiente salen en “Sin dato”, revisa el
+                    • Si temperatura u humedad ambiente salen en “Sin dato”, revisa el
                     DHT11 o la resistencia pull-up.
                   </li>
                   <li>
